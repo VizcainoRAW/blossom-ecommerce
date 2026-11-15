@@ -44,6 +44,8 @@ public class SecurityConfig {
                                 "/api/categories", "/api/categories/*").permitAll()
                         .requestMatchers("/api/products", "/api/products/**",
                                 "/api/categories", "/api/categories/**").hasRole("EMPLOYEE")
+                        .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/orders/*/status").hasRole("EMPLOYEE")
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(o -> o.jwt(jwt -> jwt.jwtAuthenticationConverter(accountTypeAsRole())))
                 .build();

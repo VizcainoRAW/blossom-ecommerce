@@ -5,6 +5,8 @@ import com.blossom.ecommerce.domain.exception.account.IdentifierAlreadyRegistere
 import com.blossom.ecommerce.domain.exception.account.InvalidCredentialsException;
 import com.blossom.ecommerce.domain.exception.category.CategoryConflictException;
 import com.blossom.ecommerce.domain.exception.category.CategoryNotFoundException;
+import com.blossom.ecommerce.domain.exception.order.OrderConflictException;
+import com.blossom.ecommerce.domain.exception.order.OrderNotFoundException;
 import com.blossom.ecommerce.domain.exception.product.ProductNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -56,6 +58,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(CategoryConflictException.class)
     ProblemDetail categoryConflict(CategoryConflictException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    ProblemDetail orderNotFound(OrderNotFoundException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(OrderConflictException.class)
+    ProblemDetail orderConflict(OrderConflictException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
     }
 

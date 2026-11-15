@@ -2,6 +2,10 @@ package com.blossom.ecommerce.infrastructure.config;
 
 import com.blossom.ecommerce.application.port.in.LoginUseCase;
 import com.blossom.ecommerce.application.port.in.ManageCategoriesUseCase;
+import com.blossom.ecommerce.application.port.in.ManageOrdersUseCase;
+import com.blossom.ecommerce.application.port.out.InventoryPort;
+import com.blossom.ecommerce.application.port.out.OrderRepository;
+import com.blossom.ecommerce.application.port.out.TransactionPort;
 import com.blossom.ecommerce.application.port.out.CategoryRepository;
 import com.blossom.ecommerce.application.port.in.ManageProductsUseCase;
 import com.blossom.ecommerce.application.port.out.ProductRepository;
@@ -23,6 +27,11 @@ public class UseCaseConfig {
     @Bean
     ManageProductsUseCase manageProductsUseCase(ProductRepository products, CategoryRepository categories) {
         return new ManageProductsUseCase(products, categories);
+    }
+
+    @Bean
+    ManageOrdersUseCase manageOrdersUseCase(OrderRepository orders, InventoryPort inventory, TransactionPort transactions) {
+        return new ManageOrdersUseCase(orders, inventory, transactions);
     }
 
     @Bean
