@@ -78,6 +78,11 @@ CREATE INDEX idx_orders_customer ON orders (customer_id);
 CREATE TABLE order_items (
     order_id   BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     variant_id BIGINT NOT NULL REFERENCES product_variants(id),
+    -- Snapshot of the variant at purchase time, so past orders read the same after catalog edits.
+    product_name VARCHAR(255) NOT NULL,
+    sku          VARCHAR(100) NOT NULL,
+    color        VARCHAR(50) NOT NULL,
+    size         VARCHAR(20) NOT NULL,
     quantity   INTEGER NOT NULL CHECK (quantity > 0),
     unit_price NUMERIC(12,2) NOT NULL,
     PRIMARY KEY (order_id, variant_id)
