@@ -3,6 +3,10 @@ package com.blossom.ecommerce.infrastructure.web;
 import com.blossom.ecommerce.domain.exception.DomainException;
 import com.blossom.ecommerce.domain.exception.account.IdentifierAlreadyRegisteredException;
 import com.blossom.ecommerce.domain.exception.account.InvalidCredentialsException;
+import com.blossom.ecommerce.domain.exception.category.CategoryConflictException;
+import com.blossom.ecommerce.domain.exception.category.CategoryNotFoundException;
+import com.blossom.ecommerce.domain.exception.product.ProductNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -38,6 +42,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IdentifierAlreadyRegisteredException.class)
     ProblemDetail alreadyRegistered(IdentifierAlreadyRegisteredException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    ProblemDetail productNotFound(ProductNotFoundException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    ProblemDetail categoryNotFound(CategoryNotFoundException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(CategoryConflictException.class)
+    ProblemDetail categoryConflict(CategoryConflictException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    /** Unique/foreign-key violations, e.g. a SKU already used by another product. */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    ProblemDetail dataIntegrity(DataIntegrityViolationException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "The request conflicts with existing data");
     }
 
     @ExceptionHandler(DomainException.class)

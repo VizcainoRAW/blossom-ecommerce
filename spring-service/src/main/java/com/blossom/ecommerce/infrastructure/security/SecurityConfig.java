@@ -12,6 +12,8 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.SecretKey;
@@ -38,9 +40,23 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/*",
+                                "/api/categories", "/api/categories/*").permitAll()
+                        .requestMatchers("/api/products", "/api/products/**",
+                                "/api/categories", "/api/categories/**").hasRole("EMPLOYEE")
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(o -> o.jwt(jwt -> {}))
+                .oauth2ResourceServer(o -> o.jwt(jwt -> jwt.jwtAuthenticationConverter(accountTypeAsRole())))
                 .build();
+    }
+
+    /** Turns the account_type claim into ROLE_CUSTOMER / ROLE_EMPLOYEE. */
+    private static JwtAuthenticationConverter accountTypeAsRole() {
+        JwtGrantedAuthoritiesConverter authorities = new JwtGrantedAuthoritiesConverter();
+        authorities.setAuthoritiesClaimName(JwtTokenService.ACCOUNT_TYPE_CLAIM);
+        authorities.setAuthorityPrefix("ROLE_");
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authorities);
+        return converter;
     }
 
     @Bean
