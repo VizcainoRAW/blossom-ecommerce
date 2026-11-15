@@ -18,7 +18,7 @@ public class RegisterCustomerUseCase {
 
     public Customer registerCustomer(String name, String lastName, String identifier, String password,
                                  DocumentType documentType, String documentNumber) {
-        if(customerRepository.existsByIdentifier(identifier)){
+        if(identifier != null && customerRepository.existsByIdentifier(identifier.trim().toLowerCase())){
             throw new IdentifierAlreadyRegisteredException(identifier);
         }
 
