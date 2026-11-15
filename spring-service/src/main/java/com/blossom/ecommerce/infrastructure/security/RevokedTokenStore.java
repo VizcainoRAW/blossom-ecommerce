@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Token ids (jti) revoked by logout, kept until the token would have expired anyway.
  */
-// shortcut: in-memory, so revocations are lost on restart and not shared between instances. Move to Redis/DB when scaling out.
 @Component
 public class RevokedTokenStore {
 

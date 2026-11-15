@@ -8,8 +8,7 @@ import jakarta.validation.constraints.Size;
 public record RegisterRequest(
         @NotBlank String firstName,
         @NotBlank String lastName,
-        @NotBlank @Email String identifier,
-        // BCrypt ignores anything past 72 bytes.
+        @NotBlank String identifier,
         @NotBlank @Size(min = 8, max = 72) String password,
         DocumentType documentType,
         String documentNumber) {

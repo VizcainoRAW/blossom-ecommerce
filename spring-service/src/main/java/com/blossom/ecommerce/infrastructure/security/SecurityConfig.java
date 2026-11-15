@@ -24,7 +24,6 @@ public class SecurityConfig {
     private final SecretKey key;
 
     public SecurityConfig(@Value("${security.jwt.secret}") String secret) {
-        // HS256 needs at least 256 bits of key material.
         if (secret.getBytes(StandardCharsets.UTF_8).length < 32) {
             throw new IllegalStateException("security.jwt.secret must be at least 32 bytes");
         }
