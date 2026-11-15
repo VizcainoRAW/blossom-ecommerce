@@ -27,11 +27,11 @@ public abstract class Account {
         this.active = active;
     }
 
-    UUID getId() { return id; }
-    AccountType getAccountType() { return accountType; }
-    String getIdentifier() { return identifier; }
-    String getPasswordHash() { return passwordHash; }
-    boolean isActive() { return active; }
+    public UUID getId() { return id; }
+    public AccountType getAccountType() { return accountType; }
+    public String getIdentifier() { return identifier; }
+    public String getPasswordHash() { return passwordHash; }
+    public boolean isActive() { return active; }
 
 
     @Override
