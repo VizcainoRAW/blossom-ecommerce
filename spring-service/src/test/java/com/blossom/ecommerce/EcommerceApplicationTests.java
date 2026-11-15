@@ -1,10 +1,9 @@
 package com.blossom.ecommerce;
 
+import com.blossom.ecommerce.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class EcommerceApplicationTests {
+class EcommerceApplicationTests extends IntegrationTest {
 
 	@Test
 	void contextLoads() {
