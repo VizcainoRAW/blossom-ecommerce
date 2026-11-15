@@ -8,7 +8,7 @@ CREATE TABLE roles (
 
 CREATE TABLE accounts (
     id            UUID PRIMARY KEY,
-    identifier    VARCHAR(255) NOT NULL UNIQUE,           -- email
+    identifier    VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     account_type  VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER'
                   CHECK (account_type IN ('EMPLOYEE','CUSTOMER')),
@@ -60,7 +60,6 @@ CREATE TABLE product_variants (
     sku        VARCHAR(100) NOT NULL UNIQUE DEFERRABLE INITIALLY DEFERRED,
     price      NUMERIC(12,2) NOT NULL CHECK (price >= 0),
     stock      INTEGER NOT NULL CHECK (stock >= 0),
-    -- Deferred so a product update can swap/replace variants without tripping over its own rows mid-flush.
     CONSTRAINT uq_variant UNIQUE (product_id, color, size) DEFERRABLE INITIALLY DEFERRED
 );
 
@@ -80,6 +79,6 @@ CREATE TABLE order_items (
     order_id   BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     variant_id BIGINT NOT NULL REFERENCES product_variants(id),
     quantity   INTEGER NOT NULL CHECK (quantity > 0),
-    unit_price NUMERIC(12,2) NOT NULL,          -- precio al momento de la compra
+    unit_price NUMERIC(12,2) NOT NULL,
     PRIMARY KEY (order_id, variant_id)
 );
