@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Makes native inputs, selects and scrollbars render dark too. */
+:root {
+  color-scheme: dark;
+}
