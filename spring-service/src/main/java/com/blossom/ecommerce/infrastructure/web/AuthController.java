@@ -1,6 +1,6 @@
 package com.blossom.ecommerce.infrastructure.web;
 
-import com.blossom.ecommerce.application.port.in.LoginCustomerUseCase;
+import com.blossom.ecommerce.application.port.in.LoginUseCase;
 import com.blossom.ecommerce.application.port.in.RegisterCustomerUseCase;
 import com.blossom.ecommerce.domain.model.user.Customer;
 import com.blossom.ecommerce.infrastructure.security.JwtTokenService;
@@ -19,14 +19,14 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final RegisterCustomerUseCase registerCustomer;
-    private final LoginCustomerUseCase loginCustomer;
+    private final LoginUseCase login;
     private final JwtTokenService tokens;
     private final RevokedTokenStore revokedTokens;
 
-    public AuthController(RegisterCustomerUseCase registerCustomer, LoginCustomerUseCase loginCustomer,
+    public AuthController(RegisterCustomerUseCase registerCustomer, LoginUseCase login,
                           JwtTokenService tokens, RevokedTokenStore revokedTokens) {
         this.registerCustomer = registerCustomer;
-        this.loginCustomer = loginCustomer;
+        this.login = login;
         this.tokens = tokens;
         this.revokedTokens = revokedTokens;
     }
@@ -41,7 +41,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public JwtResponse login(@Valid @RequestBody LoginRequest request) {
-        return tokens.issue(loginCustomer.login(request.identifier(), request.password()));
+        return tokens.issue(this.login.login(request.identifier(), request.password()));
     }
 
     @PostMapping("/logout")
