@@ -5,7 +5,7 @@ import Field from '../components/Field'
 
 export default function Login() {
   const { token, login } = useAuth()
-  // Set by RequireEmployee so we return to the page that asked for login.
+  // Set by RequireAuth so we return to the page that asked for login.
   const from = (useLocation().state as { from?: string } | null)?.from ?? '/'
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')

@@ -6,6 +6,23 @@ export type Product = {
 }
 export type Page<T> = { items: T[]; page: number; size: number; totalItems: number }
 
+export type OrderStatus = 'PENDING' | 'PAID' | 'SHIPPED' | 'CANCELLED'
+export type OrderItem = {
+  variantId: number; productName: string; sku: string; color: string; size: string
+  quantity: number; unitPrice: number; subtotal: number
+}
+export type Order = {
+  id: number; customerId: string; status: OrderStatus; total: number
+  shippingAddress: string; createdAt: string; items: OrderItem[]
+}
+// Mirrors OrderStatus.canTransitionTo on the backend.
+export const nextStatuses: Record<OrderStatus, OrderStatus[]> = {
+  PENDING: ['PAID', 'CANCELLED'],
+  PAID: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: [],
+  CANCELLED: [],
+}
+
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem('token')
   const res = await fetch(`/api${path}`, {
