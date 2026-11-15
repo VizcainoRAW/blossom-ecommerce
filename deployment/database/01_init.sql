@@ -19,7 +19,7 @@ CREATE TABLE accounts (
 
 CREATE TABLE customers (
     account_id      UUID PRIMARY KEY REFERENCES accounts(id),
-    document_type   VARCHAR(2) CHECK (document_type IN ('CC','CE','TI')),
+    document_type   VARCHAR(20) CHECK (document_type IN ('CC','TI','NIT','CE','PASSPORT')),
     document_number VARCHAR(50),
     first_name      VARCHAR(255) NOT NULL,
     last_name       VARCHAR(255) NOT NULL
@@ -28,7 +28,7 @@ CREATE TABLE customers (
 CREATE TABLE employees (
     account_id      UUID PRIMARY KEY REFERENCES accounts(id),
     role_id         BIGINT NOT NULL REFERENCES roles(id),
-    document_type   VARCHAR(2) CHECK (document_type IN ('CC','CE','TI')),
+    document_type   VARCHAR(20) CHECK (document_type IN ('CC','TI','NIT','CE','PASSPORT')),
     document_number VARCHAR(50),
     first_name      VARCHAR(255) NOT NULL,
     last_name       VARCHAR(255) NOT NULL
@@ -39,21 +39,12 @@ CREATE TABLE categories (
     name VARCHAR(150) NOT NULL UNIQUE
 );
 
-CREATE TABLE colors (
-    id   BIGSERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
-);
-
-CREATE TABLE sizes (
-    id   BIGSERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
-);
-
 CREATE TABLE products (
     id          BIGSERIAL PRIMARY KEY,
     category_id BIGINT NOT NULL REFERENCES categories(id),
     name        VARCHAR(255) NOT NULL,
     description TEXT,
+    image_urls  TEXT[] NOT NULL DEFAULT '{}',
     active      BOOLEAN NOT NULL DEFAULT TRUE,
     create_at   TIMESTAMPTZ(0) NOT NULL DEFAULT NOW(),
     update_at   TIMESTAMPTZ(0)
@@ -64,18 +55,13 @@ CREATE INDEX idx_products_category ON products (category_id);
 CREATE TABLE product_variants (
     id         BIGSERIAL PRIMARY KEY,
     product_id BIGINT NOT NULL REFERENCES products(id),
-    color_id   BIGINT NOT NULL REFERENCES colors(id),
-    size_id    BIGINT NOT NULL REFERENCES sizes(id),
-    sku        VARCHAR(100) NOT NULL UNIQUE,
+    color      VARCHAR(50) NOT NULL,
+    size       VARCHAR(20) NOT NULL,
+    sku        VARCHAR(100) NOT NULL UNIQUE DEFERRABLE INITIALLY DEFERRED,
     price      NUMERIC(12,2) NOT NULL CHECK (price >= 0),
     stock      INTEGER NOT NULL CHECK (stock >= 0),
-    CONSTRAINT uq_variant UNIQUE (product_id, color_id, size_id)
-);
-
-CREATE TABLE product_images (
-    id         BIGSERIAL PRIMARY KEY,
-    product_id BIGINT NOT NULL REFERENCES products(id),
-    url        TEXT NOT NULL
+    -- Deferred so a product update can swap/replace variants without tripping over its own rows mid-flush.
+    CONSTRAINT uq_variant UNIQUE (product_id, color, size) DEFERRABLE INITIALLY DEFERRED
 );
 
 CREATE TABLE orders (
@@ -91,9 +77,9 @@ CREATE TABLE orders (
 CREATE INDEX idx_orders_customer ON orders (customer_id);
 
 CREATE TABLE order_items (
-    id         BIGSERIAL PRIMARY KEY,
     order_id   BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     variant_id BIGINT NOT NULL REFERENCES product_variants(id),
     quantity   INTEGER NOT NULL CHECK (quantity > 0),
-    unit_price NUMERIC(12,2) NOT NULL          -- precio al momento de la compra
+    unit_price NUMERIC(12,2) NOT NULL,          -- precio al momento de la compra
+    PRIMARY KEY (order_id, variant_id)
 );
